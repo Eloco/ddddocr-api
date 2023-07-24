@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>captcha Image Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>captcha Image Upload</h1>
+    <label for="modelInput">Model Name:</label>
+    <input type="text" id="modelInput" value="NBSDB">
+    <br><br>
+    <hr>
+    <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+    <button onclick="performOCR()">Upload</button>
+
+    <hr>
+
+    <label for="urlInput">Image URL:</label>
+    <input type="text" id="urlInput">
+    <button onclick="performOCRFromURL()">Submit</button>
+
+    <br>
+    <img id="previewImage" style="max-width: 400px; max-height: 400px; display: none;">
+
+    <div id="resultDiv"></div>
+
+    <script>
+        function previewImage(event) {
+            const fileInput = event.target;
+            const previewImage = document.getElementById("previewImage");
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = "block";
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function performOCR() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                const modelInput = document.getElementById("modelInput").value;
+                formData.append("model_name", modelInput); // Added model_name to the form data
+                formData.append("file", file);
+
+                fetch("/", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById("resultDiv");
+                    resultDiv.innerHTML = "<h2>OCR Result:</h2><p>" + data.text + "</p>";
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            }
+        }
+
+        function performOCRFromURL() {
+            const urlInput = document.getElementById("urlInput");
+            const url = urlInput.value;
+            if (url) {
+                const formData = new FormData();
+                const modelInput = document.getElementById("modelInput").value;
+                formData.append("model_name", modelInput); // Added model_name to the form data
+                formData.append("url", url);
+
+                fetch("/", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById("resultDiv");
+                    resultDiv.innerHTML = "<h2>OCR Result:</h2><p>" + data.text + "</p>";
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

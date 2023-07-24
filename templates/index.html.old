@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tesseract OCR API</title>
+</head>
+<body>
+    <h1>Tesseract OCR API</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="image-input" accept="image/*" required><br><br>
+        <label for="lang-input">Language:</label>
+        <input type="text" id="lang-input" value="eng" placeholder="Enter language code"><br><br>
+        <label for="config-input">Config:</label>
+        <input type="text" id="config-input" placeholder="Enter config parameters"><br><br>
+        <input type="button" value="Upload" onclick="uploadImage()">
+    </form>
+
+    <hr>
+
+    <h2>Conversion Result</h2>
+    <div id="result"></div>
+
+    <script>
+        function uploadImage() {
+            const formData = new FormData();
+            formData.append('image', document.getElementById('image-input').files[0]);
+            formData.append('lang', document.getElementById('lang-input').value);
+            formData.append('config', document.getElementById('config-input').value);
+
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const result = data.result;
+                document.getElementById('result').innerText = result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

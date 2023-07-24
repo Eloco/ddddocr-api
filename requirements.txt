@@ -1,0 +1,4 @@
+Flask
+ddddocr
+Pillow
+requests
